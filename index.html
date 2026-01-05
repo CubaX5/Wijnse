@@ -3,192 +3,414 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Wijn Smaakspel – Druif, Stijl & Regio</title>
+<title>Wijn Smaakspel – Timed Challenge</title>
 <style>
-  body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:#0b0b10;color:#f5f5f7}
-  .wrap{max-width:900px;margin:auto;padding:16px 16px 120px}
-  .card{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:16px;padding:16px;box-shadow:0 20px 60px rgba(0,0,0,.45)}
-  .top{display:flex;gap:10px;align-items:center;margin:8px 0 12px}
-  .badge{padding:8px 12px;border-radius:999px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);font-weight:800;white-space:nowrap}
-  .progress{flex:1;height:10px;border-radius:999px;background:rgba(255,255,255,.08);overflow:hidden;border:1px solid rgba(255,255,255,.12)}
-  .progress div{height:100%;width:0%;background:linear-gradient(90deg,#7c3aed,#ec4899);transition:.3s}
-  h1{font-size:18px;margin:0 0 10px}
-  .item{font-size:26px;font-weight:900;margin:2px 0 10px}
+  :root{
+    --bg:#ffffff;
+    --text:#111827;
+    --muted:#6b7280;
+    --card:#ffffff;
+    --stroke:#e5e7eb;
+    --shadow: 0 18px 50px rgba(17,24,39,.10);
+    --wine:#7A0C2E;
+    --wine2:#A31638;
+    --wineSoft: rgba(122,12,46,.10);
+    --safe-bottom: env(safe-area-inset-bottom, 0px);
+    --r:16px;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:var(--text)}
+  .wrap{max-width:940px;margin:0 auto;padding:16px 16px calc(130px + var(--safe-bottom))}
+  .top{display:flex;gap:10px;align-items:center;margin:8px 0 12px;flex-wrap:wrap}
+  .badge{display:inline-flex;align-items:center;gap:8px;padding:10px 12px;border-radius:999px;background:#fff;border:1px solid var(--stroke);box-shadow:0 6px 18px rgba(17,24,39,.06);font-weight:800;white-space:nowrap}
+  .badge strong{color:var(--wine)}
+  .progress{flex:1 1 220px;height:10px;border-radius:999px;background:#f3f4f6;overflow:hidden;border:1px solid var(--stroke)}
+  .progress>div{height:100%;width:0%;background:linear-gradient(90deg,var(--wine),var(--wine2));transition:width .25s ease}
+  .card{background:var(--card);border:1px solid var(--stroke);border-radius:var(--r);box-shadow:var(--shadow);padding:16px}
+  h1{margin:0 0 8px;font-size:18px;letter-spacing:.2px}
+  .sub{color:var(--muted);font-size:13px;margin-bottom:12px}
+  .item{font-size:26px;font-weight:900;margin:6px 0 10px;color:var(--wine)}
+  .metaRow{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin:8px 0 10px}
+  .metaRow .hint{color:var(--muted);font-size:13px}
+  .chips{display:flex;flex-wrap:wrap;gap:8px;min-height:34px;margin:6px 0 10px}
+  .chip{display:inline-flex;align-items:center;gap:8px;padding:8px 10px;border-radius:999px;border:1px solid rgba(122,12,46,.25);background:var(--wineSoft);font-weight:800;font-size:13px}
+  .chip button{all:unset;cursor:pointer;padding:2px 8px;border-radius:999px;border:1px solid rgba(122,12,46,.25);background:#fff;font-weight:900;line-height:1.1;color:var(--wine)}
   .options{display:grid;grid-template-columns:1fr;gap:10px}
-  @media(min-width:700px){.options{grid-template-columns:1fr 1fr}}
-  .opt{padding:14px;border-radius:14px;border:1px solid rgba(255,255,255,.12);background:rgba(0,0,0,.25);cursor:pointer;font-weight:800;line-height:1.25}
-  .opt.selected{background:rgba(236,72,153,.2);border-color:rgba(236,72,153,.65)}
-  .feedback{margin-top:12px;padding:12px 14px;border-radius:14px;display:none;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.06);line-height:1.35}
-  .feedback.good{background:rgba(34,197,94,.18);border-color:rgba(34,197,94,.45)}
-  .feedback.bad{background:rgba(239,68,68,.16);border-color:rgba(239,68,68,.45)}
-  .hint{opacity:.85;font-size:13px;margin-top:6px}
-  .bottom{position:fixed;left:0;right:0;bottom:0;background:rgba(11,11,16,.85);border-top:1px solid rgba(255,255,255,.12);backdrop-filter:blur(10px);padding:12px 16px calc(12px + env(safe-area-inset-bottom, 0px))}
-  .bottom .inner{max-width:900px;margin:auto;display:flex;gap:10px}
-  button{flex:1;padding:14px;border-radius:14px;border:0;font-weight:900}
-  .primary{background:linear-gradient(90deg,#22c55e,#a3e635);color:#0b0b10}
-  .secondary{background:rgba(255,255,255,.08);color:#f5f5f7;border:1px solid rgba(255,255,255,.12)}
-  button:disabled{opacity:.4}
-  .error{margin-top:12px;padding:12px 14px;border-radius:14px;border:1px solid rgba(239,68,68,.45);background:rgba(239,68,68,.16);display:none}
-  code{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono",monospace}
+  @media(min-width:760px){.options{grid-template-columns:1fr 1fr}}
+  .opt{padding:14px;border-radius:16px;border:1px solid var(--stroke);background:#fff;cursor:pointer;font-weight:850;line-height:1.25;display:flex;align-items:flex-start;justify-content:space-between;gap:10px;transition:transform .05s ease,border-color .15s ease,background .15s ease;min-height:56px}
+  .opt:active{transform:scale(.99)}
+  .opt.selected{border-color:rgba(122,12,46,.55);background:var(--wineSoft)}
+  .pill{flex:0 0 auto;font-size:12px;color:var(--wine);border:1px solid rgba(122,12,46,.25);background:#fff;padding:4px 10px;border-radius:999px;margin-top:1px;white-space:nowrap}
+  .feedback{margin-top:12px;padding:12px 14px;border-radius:14px;border:1px solid var(--stroke);background:#fff;display:none;line-height:1.35}
+  .feedback.good{border-color:rgba(22,163,74,.35);background:rgba(22,163,74,.06)}
+  .feedback.bad{border-color:rgba(220,38,38,.35);background:rgba(220,38,38,.06)}
+  .feedback .small{font-size:13px;color:var(--muted);margin-top:6px}
+  .bottom{position:fixed;left:0;right:0;bottom:0;background:rgba(255,255,255,.92);border-top:1px solid var(--stroke);backdrop-filter:blur(10px);padding:12px 16px calc(12px + var(--safe-bottom))}
+  .bottom .inner{max-width:940px;margin:0 auto;display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+  .stats{font-size:13px;color:var(--muted);display:flex;gap:10px;flex-wrap:wrap}
+  .stats b{color:var(--text)}
+  .btns{display:flex;gap:10px;flex:1 1 auto;justify-content:flex-end;min-width:280px}
+  button{border:0;border-radius:16px;padding:14px 16px;font-weight:900;cursor:pointer;transition:transform .05s ease,opacity .2s ease;white-space:nowrap}
+  button:active{transform:scale(.99)}
+  button:disabled{opacity:.45;cursor:not-allowed}
+  .primary{background:linear-gradient(90deg,var(--wine),var(--wine2));color:#fff;flex:1 1 140px}
+  .secondary{background:#fff;border:1px solid rgba(122,12,46,.25);color:var(--wine);flex:1 1 140px}
+  .ghost{background:#fff;border:1px solid var(--stroke);color:var(--text);flex:1 1 140px}
+  .kicker{margin-top:10px;font-size:12.5px;color:var(--muted)}
 </style>
 </head>
 <body>
 <div class="wrap">
   <div class="top">
-    <div class="badge">🍷 Wijnspel</div>
+    <div class="badge">🍷 <span>Wijnspel</span></div>
     <div class="progress" aria-label="Voortgang"><div id="bar"></div></div>
-    <div class="badge">⭐ <span id="score">0</span></div>
+    <div class="badge">⏱️ <strong id="time">--:--</strong></div>
+    <div class="badge">⭐ <strong id="score">0</strong></div>
   </div>
 
   <div class="card">
-    <h1>Kies exact <b>3 smaakprofielen</b></h1>
-    <div class="item" id="item">…</div>
+    <h1>Timed Challenge</h1>
+    <div class="sub">Kies steeds <b>exact 3</b> profielen. Fout? Dan komt die vraag later terug tot je ’m goed hebt.</div>
 
-    <noscript>
-      <div class="error" style="display:block">
-        JavaScript staat uit of wordt niet uitgevoerd. Open dit bestand in <b>Safari</b> (niet in een preview) en zorg dat JavaScript aan staat.
-      </div>
-    </noscript>
-
-    <div class="options" id="options"></div>
-    <div class="feedback" id="feedback"></div>
-    <div class="error" id="errbox"></div>
-    <div class="hint">
-      Tip: Als je op iPhone géén opties ziet, open het bestand via <b>Delen → Open in Safari</b> (de Files/Preview-viewer draait vaak geen scripts).
+    <div class="metaRow">
+      <div class="item" id="item">…</div>
+      <div class="hint" id="meta">Laden…</div>
     </div>
+
+    <div class="chips" id="chips"></div>
+    <div class="options" id="options"></div>
+
+    <div class="feedback" id="feedback"></div>
+    <div class="kicker" id="kicker"></div>
   </div>
 </div>
 
 <div class="bottom">
   <div class="inner">
-    <button class="secondary" id="reset" type="button">Reset</button>
-    <button class="primary" id="check" type="button" disabled>Check</button>
-    <button class="secondary" id="next" type="button" disabled>Volgende</button>
+    <div class="stats">
+      <span>✅ Behaald: <b><span id="done">0</span>/<span id="target">10</span></b></span>
+      <span>🎯 Pogingen: <b><span id="attempts">0</span></b></span>
+      <span>🔥 Streak: <b><span id="streak">0</span></b></span>
+    </div>
+    <div class="btns">
+      <button class="ghost" id="restart" type="button">Opnieuw</button>
+      <button class="secondary" id="reset" type="button">Reset keuze</button>
+      <button class="primary" id="check" type="button" disabled>Check</button>
+      <button class="secondary" id="next" type="button" disabled>Volgende</button>
+    </div>
   </div>
 </div>
 
 <script>
 document.addEventListener("DOMContentLoaded", () => {
-  const errbox = document.getElementById("errbox");
-  const showError = (msg, err) => {
-    errbox.style.display = "block";
-    errbox.innerHTML = "<b>Er ging iets mis.</b><br>" +
-      msg + (err ? "<br><br><code>" + String(err).replaceAll("<","&lt;") + "</code>" : "");
+  const pool = [
+    {n:"Gewürztraminer",c:["Exotisch fruit","Bloemig & kruidig","Laag zuur / aromatisch"]},
+    {n:"Sauvignon Blanc",c:["Fris & groen","Aromatisch","Hoge zuren"]},
+    {n:"Riesling",c:["Citrus & steenfruit","Mineraal/bloemig","Droog tot zoet"]},
+    {n:"Syrah",c:["Donker fruit","Peperig & rokerig","Krachtig"]},
+    {n:"Chablis",c:["Strak & mineraal","Citrus","Hoge zuren"]},
+    {n:"Chardonnay (hout)",c:["Boter & vanille","Rijp geel fruit","Vol & romig"]},
+    {n:"Muscadet",c:["Zilt & mineraal","Zeer fris","Licht body"]},
+    {n:"Rioja Crianza/Reserva",c:["Rood fruit","Vanille & hout","Zacht kruidig"]},
+    {n:"Rhône (blend)",c:["Rijp rood fruit","Kruidig","Medium tot vol"]},
+    {n:"Carmenère",c:["Donker fruit","Kruidig","Groene paprika"]},
+    {n:"Pinot Noir Bourgogne",c:["Rood fruit","Aards","Elegant & fris"]},
+    {n:"Bardolino / Valpolicella",c:["Licht rood fruit","Sappig","Weinig tannine"]},
+  ];
+
+  const TARGET = 10;      // 10 items masteren
+  const TIME_LIMIT = 150; // 2:30
+
+  const allProfiles = Array.from(new Set(pool.flatMap(i => i.c)));
+
+  const timeEl = document.getElementById("time");
+  const scoreEl = document.getElementById("score");
+  const barEl = document.getElementById("bar");
+  const itemEl = document.getElementById("item");
+  const metaEl = document.getElementById("meta");
+  const optionsEl = document.getElementById("options");
+  const chipsEl = document.getElementById("chips");
+  const feedbackEl = document.getElementById("feedback");
+  const kickerEl = document.getElementById("kicker");
+
+  const doneEl = document.getElementById("done");
+  const targetEl = document.getElementById("target");
+  const attemptsEl = document.getElementById("attempts");
+  const streakEl = document.getElementById("streak");
+
+  const checkBtn = document.getElementById("check");
+  const nextBtn = document.getElementById("next");
+  const resetBtn = document.getElementById("reset");
+  const restartBtn = document.getElementById("restart");
+
+  const haptic = (ms=15) => { try { if (navigator.vibrate) navigator.vibrate(ms); } catch(e){} };
+  const shuffle = (arr) => {
+    const a = arr.slice();
+    for (let i=a.length-1;i>0;i--){
+      const j = Math.floor(Math.random()*(i+1));
+      [a[i],a[j]]=[a[j],a[i]];
+    }
+    return a;
+  };
+  const fmtTime = (s) => {
+    const m = Math.floor(Math.max(0,s)/60);
+    const r = Math.max(0,s)%60;
+    return String(m).padStart(2,"0")+":"+String(r).padStart(2,"0");
   };
 
-  try {
-    const items = [
-      {n:"Gewürztraminer",c:["Exotisch fruit","Bloemig & kruidig","Laag zuur / aromatisch"]},
-      {n:"Sauvignon Blanc",c:["Fris & groen","Aromatisch","Hoge zuren"]},
-      {n:"Riesling",c:["Citrus & steenfruit","Mineraal/bloemig","Droog tot zoet"]},
-      {n:"Syrah",c:["Donker fruit","Peperig & rokerig","Krachtig"]},
-      {n:"Chablis",c:["Strak & mineraal","Citrus","Hoge zuren"]},
-      {n:"Chardonnay (hout)",c:["Boter & vanille","Rijp geel fruit","Vol & romig"]},
-      {n:"Muscadet",c:["Zilt & mineraal","Zeer fris","Licht body"]},
-      {n:"Rioja Crianza/Reserva",c:["Rood fruit","Vanille & hout","Zacht kruidig"]},
-      {n:"Rhône (blend)",c:["Rijp rood fruit","Kruidig","Medium tot vol"]},
-      {n:"Carmenère",c:["Donker fruit","Kruidig","Groene paprika"]},
-      {n:"Pinot Noir Bourgogne",c:["Rood fruit","Aards","Elegant & fris"]},
-      {n:"Bardolino / Valpolicella",c:["Licht rood fruit","Sappig","Weinig tannine"]},
-    ];
+  let timerId = null;
+  let remaining = TIME_LIMIT;
+  let score = 0;
 
-    const all = Array.from(new Set(items.flatMap(i => i.c)));
+  let queue = [];
+  let current = null;
+  let selected = new Set();
+  let locked = false;
 
-    let cur = null;
-    let sel = new Set();
-    let score = 0;
-    let round = 0;
+  let attempts = 0;
+  let mastered = new Set();
+  let streak = 0;
 
-    const itemEl = document.getElementById("item");
-    const optEl  = document.getElementById("options");
-    const fb     = document.getElementById("feedback");
-    const bar    = document.getElementById("bar");
-    const check  = document.getElementById("check");
-    const next   = document.getElementById("next");
-    const reset  = document.getElementById("reset");
-    const scoreEl= document.getElementById("score");
+  let lastItems = [];
+  let lastDistractors = new Set();
 
-    const haptic = (ms=15) => { try { if (navigator.vibrate) navigator.vibrate(ms); } catch(e){} };
+  function buildInitialQueue(){
+    const picks = shuffle(pool).slice(0, Math.min(TARGET, pool.length));
+    queue = shuffle(picks).map(x => ({...x}));
+    mastered = new Set();
+    lastItems = [];
+    lastDistractors = new Set();
+  }
 
-    const shuffle = (arr) => {
-      const a = arr.slice();
-      for (let i=a.length-1; i>0; i--){
-        const j = Math.floor(Math.random()*(i+1));
-        [a[i], a[j]] = [a[j], a[i]];
+  function stopTimer(){
+    if (timerId){ clearInterval(timerId); timerId = null; }
+  }
+  function startTimer(){
+    stopTimer();
+    remaining = TIME_LIMIT;
+    timeEl.textContent = fmtTime(remaining);
+    timerId = setInterval(() => {
+      remaining -= 1;
+      if (remaining <= 0){
+        remaining = 0;
+        timeEl.textContent = fmtTime(0);
+        endGame(false);
+        return;
       }
-      return a;
-    };
+      timeEl.textContent = fmtTime(remaining);
+    }, 1000);
+  }
 
-    function render(){
-      sel.clear();
-      fb.style.display = "none";
-      fb.className = "feedback";
-      check.disabled = true;
-      next.disabled = true;
+  function updateHUD(){
+    scoreEl.textContent = score;
+    doneEl.textContent = mastered.size;
+    targetEl.textContent = Math.min(TARGET, pool.length);
+    attemptsEl.textContent = attempts;
+    streakEl.textContent = streak;
+    barEl.style.width = Math.round((mastered.size / Math.min(TARGET, pool.length)) * 100) + "%";
+  }
 
-      cur = items[Math.floor(Math.random()*items.length)];
-      itemEl.textContent = cur.n;
+  function chooseDistractors(correct){
+    const poolD = allProfiles.filter(p => !correct.includes(p));
+    const fresh = poolD.filter(p => !lastDistractors.has(p));
+    const pickFrom = (fresh.length >= 3) ? fresh : poolD;
+    const distractors = shuffle(pickFrom).slice(0,3);
 
-      const distract = all.filter(x => !cur.c.includes(x));
-      const opts = shuffle(cur.c.concat(shuffle(distract).slice(0,3)));
+    distractors.forEach(d => lastDistractors.add(d));
+    if (lastDistractors.size > 18){
+      lastDistractors = new Set(distractors);
+    }
+    return distractors;
+  }
 
-      optEl.innerHTML = "";
-      opts.forEach(o => {
-        const d = document.createElement("div");
-        d.className = "opt";
-        d.textContent = o;
-        d.addEventListener("click", () => {
-          if (fb.style.display === "block") return; // locked after check
-          if (sel.has(o)){
-            sel.delete(o);
-            d.classList.remove("selected");
-            haptic(10);
-          } else {
-            if (sel.size >= 3) { haptic(25); return; }
-            sel.add(o);
-            d.classList.add("selected");
-            haptic(12);
-          }
-          check.disabled = (sel.size !== 3);
+  function renderChips(){
+    chipsEl.innerHTML = "";
+    Array.from(selected).forEach((val) => {
+      const chip = document.createElement("span");
+      chip.className = "chip";
+      chip.innerHTML = `<span>${val}</span><button type="button" aria-label="Verwijder">×</button>`;
+      chip.querySelector("button").addEventListener("click", () => {
+        if (locked) return;
+        selected.delete(val);
+        Array.from(optionsEl.children).forEach(el => {
+          if (el.dataset.value === val) el.classList.remove("selected");
         });
-        optEl.appendChild(d);
+        renderChips();
+        checkBtn.disabled = (selected.size !== 3);
+        haptic(10);
       });
+      chipsEl.appendChild(chip);
+    });
+  }
 
-      bar.style.width = Math.round((round / Math.max(items.length,1)) * 100) + "%";
+  function renderOptions(){
+    const correct = current.c.slice();
+    const distractors = chooseDistractors(correct);
+    const opts = shuffle(correct.concat(distractors));
+
+    optionsEl.innerHTML = "";
+    opts.forEach((text, i) => {
+      const d = document.createElement("div");
+      d.className = "opt";
+      d.dataset.value = text;
+      d.innerHTML = `<span>${text}</span><span class="pill">Optie ${i+1}</span>`;
+      d.addEventListener("click", () => {
+        if (locked) return;
+        const val = d.dataset.value;
+
+        if (selected.has(val)){
+          selected.delete(val);
+          d.classList.remove("selected");
+          haptic(10);
+        } else {
+          if (selected.size >= 3){ haptic(25); return; }
+          selected.add(val);
+          d.classList.add("selected");
+          haptic(12);
+        }
+
+        renderChips();
+        checkBtn.disabled = (selected.size !== 3);
+      });
+      optionsEl.appendChild(d);
+    });
+  }
+
+  function pickNext(){
+    if (queue.length === 0){
+      endGame(true);
+      return;
+    }
+    locked = false;
+    selected.clear();
+    feedbackEl.style.display = "none";
+    feedbackEl.className = "feedback";
+    nextBtn.disabled = true;
+    checkBtn.disabled = true;
+
+    const lookahead = Math.min(5, queue.length);
+    let idx = 0;
+    for (let i=0;i<lookahead;i++){
+      if (!lastItems.includes(queue[i].n)){ idx = i; break; }
+    }
+    current = queue.splice(idx, 1)[0];
+
+    lastItems.push(current.n);
+    if (lastItems.length > 4) lastItems.shift();
+
+    itemEl.textContent = current.n;
+    metaEl.textContent = `Kies 3 profielen • Doel: ${Math.min(TARGET, pool.length)} • Tijdbonus = resterende seconden`;
+    renderChips();
+    renderOptions();
+    updateHUD();
+    kickerEl.textContent = "";
+  }
+
+  function checkAnswer(){
+    if (locked || selected.size !== 3) return;
+
+    locked = true;
+    attempts += 1;
+
+    const picked = Array.from(selected);
+    const goodCount = picked.filter(p => current.c.includes(p)).length;
+    const perfect = (goodCount === 3);
+
+    if (perfect){
+      streak = Math.min(6, streak + 1);
+      const gained = 10 + streak;
+      score += gained;
+      mastered.add(current.n);
+
+      feedbackEl.className = "feedback good";
+      feedbackEl.innerHTML = `<b>✅ Goed!</b> +${gained} punten <span class="small">(streak bonus)</span>`;
+      feedbackEl.style.display = "block";
+      kickerEl.textContent = "Doorpakken — volgende!";
+      haptic(30);
+
+      nextBtn.disabled = false;
+
+      if (mastered.size >= Math.min(TARGET, pool.length)){
+        endGame(true);
+        return;
+      }
+    } else {
+      streak = 0;
+
+      feedbackEl.className = "feedback bad";
+      feedbackEl.innerHTML = `<b>⚡ Bijna.</b> Dit zijn de juiste profielen:<div class="small" style="margin-top:6px">${current.c.join(" • ")}</div>`;
+      feedbackEl.style.display = "block";
+      kickerEl.textContent = "Deze vraag komt later terug (spaced repetition).";
+      haptic(22);
+
+      nextBtn.disabled = false;
+
+      const insertPos = Math.min(queue.length, 2 + Math.floor(Math.random()*3));
+      queue.splice(insertPos, 0, current);
     }
 
-    check.addEventListener("click", () => {
-      const good = Array.from(sel).filter(x => cur.c.includes(x)).length;
-      fb.className = "feedback " + (good === 3 ? "good" : "bad");
-      fb.innerHTML = (good === 3)
-        ? "✅ Helemaal goed!"
-        : "⚡ Bijna. Juiste profielen:<br>" + cur.c.join(" • ");
-      fb.style.display = "block";
-
-      score += good * 3;
-      scoreEl.textContent = score;
-
-      next.disabled = false;
-      check.disabled = true;
-      haptic(good === 3 ? 30 : 20);
-    });
-
-    next.addEventListener("click", () => {
-      round += 1;
-      render();
-    });
-
-    reset.addEventListener("click", () => {
-      round = round; // keep progress
-      render();
-    });
-
-    // First render
-    render();
-
-  } catch (e) {
-    showError("De game-script is gecrasht. Dit gebeurt vaak als het bestand in een preview-viewer opent i.p.v. Safari.", e);
+    updateHUD();
+    checkBtn.disabled = true;
   }
+
+  function resetSelection(){
+    if (locked) return;
+    selected.clear();
+    Array.from(optionsEl.children).forEach(el => el.classList.remove("selected"));
+    renderChips();
+    checkBtn.disabled = true;
+    haptic(10);
+  }
+
+  function endGame(success){
+    stopTimer();
+    locked = true;
+    checkBtn.disabled = true;
+    nextBtn.disabled = true;
+
+    const timeBonus = remaining;
+    score += timeBonus;
+    updateHUD();
+
+    const header = success ? "🎉 Challenge afgerond!" : "⏰ Tijd is op!";
+    const sub = success
+      ? `Je hebt ${mastered.size}/${Math.min(TARGET, pool.length)} items goed afgerond.`
+      : `Je hebt ${mastered.size}/${Math.min(TARGET, pool.length)} items afgerond binnen de tijd.`;
+
+    feedbackEl.className = "feedback " + (success ? "good" : "bad");
+    feedbackEl.innerHTML =
+      `<b>${header}</b><div class="small" style="margin-top:6px">${sub}</div>` +
+      `<div class="small" style="margin-top:6px"><b>Tijdbonus:</b> +${timeBonus} • <b>Eindscore:</b> ${score}</div>`;
+    feedbackEl.style.display = "block";
+
+    kickerEl.textContent = "Tap ‘Opnieuw’ voor een nieuwe run (nieuwe set, minder herhaling).";
+  }
+
+  function restart(){
+    stopTimer();
+    score = 0;
+    attempts = 0;
+    streak = 0;
+    mastered = new Set();
+    selected.clear();
+    locked = false;
+
+    buildInitialQueue();
+    startTimer();
+    updateHUD();
+    pickNext();
+  }
+
+  checkBtn.addEventListener("click", checkAnswer);
+  nextBtn.addEventListener("click", pickNext);
+  resetBtn.addEventListener("click", resetSelection);
+  restartBtn.addEventListener("click", restart);
+
+  // start
+  buildInitialQueue();
+  startTimer();
+  updateHUD();
+  pickNext();
 });
 </script>
 </body>
